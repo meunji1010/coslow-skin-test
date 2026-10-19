@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>코슬로우 2분 피부성향 테스트</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap");
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        padding: 28px 18px;
+        display: grid;
+        place-items: center;
+        background-color: #f0ebff;
+        background-image:
+          radial-gradient(circle at 12% 15%, #ffd9ec 0, transparent 35%),
+          radial-gradient(circle at 90% 85%, #d9edff 0, transparent 40%);
+        color: #29233d;
+        font-family: "Noto Sans KR", sans-serif;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .card {
+        position: relative;
+        width: 100%;
+        max-width: 460px;
+        padding: 34px 26px 26px;
+        overflow: hidden;
+        background: #ffffff;
+        border: 2px solid #29233d;
+        border-radius: 30px;
+        box-shadow: 7px 8px 0 #c9b7fa;
+      }
+      /* 카드 오른쪽 위 장식 */
+      .card::before {
+        content: "✦";
+        position: absolute;
+        top: 22px;
+        right: 25px;
+        color: #a88ae8;
+        font-size: 34px;
+        pointer-events: none;
+      }
+      .brand {
+        display: inline-block;
+        margin: 0 0 38px;
+        padding: 7px 12px;
+        border: 1.5px solid #29233d;
+        border-radius: 9px;
+        background: #eaff9a;
+        color: #29233d;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 2px;
+        transform: rotate(-3deg);
+      }
+      .label {
+        display: table;
+        margin: 0 0 18px;
+        padding: 7px 12px;
+        border-radius: 100px;
+        background: #f0eaff;
+        color: #7950c7;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      h1 {
+        white-space: pre-line;
+        margin: 0 0 20px;
+        font-size: clamp(25px, 6.6vw, 32px);
+        font-weight: 900;
+        line-height: 1.5;
+        letter-spacing: -1.2px;
+        word-break: keep-all;
+        overflow-wrap: anywhere;
+      }
+      /* 질문이 바뀔 때 생기는 제목 테두리 제거 */
+      h1:focus {
+        outline: none;
+      }
+      .description {
+        margin: 0;
+        color: #827b92;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1.85;
+        letter-spacing: -0.3px;
+        white-space: pre-line;
+        word-break: keep-all;
+      }
+      .answers {
+        display: grid;
+        gap: 15px;
+        margin-top: 34px;
+      }
+      button {
+        width: 100%;
+        min-height: 62px;
+        padding: 17px 16px;
+        border: 2px solid #29233d;
+        border-radius: 18px;
+        background: #fff;
+        color: #29233d;
+        box-shadow: 0 4px 0 #29233d;
+        font: inherit;
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+        touch-action: manipulation;
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease,
+          background-color 0.15s ease;
+      }
+      .primary {
+        background: #bfa0ff;
+        color: #25183e;
+      }
+      @media (hover: hover) {
+        button:hover {
+          background: #f4eeff;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 0 #29233d;
+        }
+        .primary:hover {
+          background: #ccb3ff;
+        }
+      }
+      button:active {
+        transform: translateY(4px);
+        box-shadow: 0 0 0 #29233d;
+      }
+      button:focus-visible {
+        outline: 3px solid #8c5cdb;
+        outline-offset: 6px;
+      }
+      .back {
+        width: auto;
+        min-height: 44px;
+        display: block;
+        margin: 22px auto 0;
+        padding: 10px 14px;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        box-shadow: none;
+        color: #898193;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .back:hover,
+      .back:active {
+        background: #f7f3fc;
+        box-shadow: none;
+        transform: none;
+      }
+      .note {
+        margin: 28px 0 0;
+        padding-top: 18px;
+        border-top: 1px dashed #e2daee;
+        color: #a099ad;
+        font-size: 11px;
+        line-height: 1.8;
+        word-break: keep-all;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      @media (max-width: 360px) {
+        .card {
+          padding: 28px 20px 22px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        button {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <p class="brand">SKIN TEST</p>
+      <section id="screen" aria-live="polite">
+        <p id="label" class="label"></p>
+        <h1 id="title" tabindex="-1"></h1>
+        <p id="description" class="description"></p>
+        <div id="answers" class="answers"></div>
+      </section>
+      <button id="back" class="back" hidden>← 이전 질문으로</button>
+      <p class="note">
+        바우만의 4가지 분류축을 참고해 재구성한 간편 설문입니다. 원본 검사와
+        동일한 정확도를 검증한 검사가 아니며, 진단용이 아닙니다. 피부 상태는
+        계절과 생활 습관에 따라 달라질 수 있습니다.
+      </p>
+    </main>
+    <script>
+      // 축약 설문용 자체 채점 규칙입니다. 원본 바우만 점수표와 다릅니다.
+      // 선택지 0~3점, 역방향 질문은 3-선택값. 축별 평균 1.5점 기준.
+      // 모름은 제외하며 2개 미만 응답 또는 평균 1.5점은 경계/판단 보류합니다.
+      const questions = [
+        {
+          category: "유분·건조",
+          text: "세안 후 보습제를 바로 바르지 않으면 얼굴이 얼마나 당기나요?",
+          options: "degree",
+          axis: "oil",
+          reverse: true,
+        },
+        {
+          category: "유분·건조",
+          text: "평소 오후가 되면 이마와 코에 기름기가 얼마나 올라오나요?",
+          options: "degree",
+          axis: "oil",
+          reverse: false,
+        },
+        {
+          category: "유분·건조",
+          text: "평소 볼이 건조하거나 각질이 일어나는 일이 얼마나 자주 있나요?",
+          options: "frequency",
+          axis: "oil",
+          reverse: true,
+        },
+        {
+          category: "민감성",
+          text: "화장품을 바른 뒤 따갑거나 가려운 일이 얼마나 자주 있나요?",
+          options: "frequency",
+          axis: "sensitive",
+          reverse: false,
+        },
+        {
+          category: "민감성",
+          text: "더위나 운동, 온도 변화로 얼굴이 쉽게 붉어지나요?",
+          options: "frequency",
+          axis: "sensitive",
+          reverse: false,
+        },
+        {
+          category: "민감성",
+          text: "얼굴에 붉은 여드름이나 뾰루지가 얼마나 자주 생기나요?",
+          options: "frequency",
+          axis: "sensitive",
+          reverse: false,
+        },
+        {
+          category: "색소침착",
+          text: "여드름이 가라앉은 자리에 갈색이나 거뭇한 자국이 남나요?",
+          options: "frequency",
+          axis: "pigment",
+          reverse: false,
+        },
+        {
+          category: "색소침착",
+          text: "작은 상처가 나면 아문 뒤에도 갈색 자국이 오래 남나요?",
+          options: "frequency",
+          axis: "pigment",
+          reverse: false,
+        },
+        {
+          category: "색소침착",
+          text: "햇빛을 많이 받은 뒤 얼굴의 잡티가 더 진해지나요?",
+          options: "frequency",
+          axis: "pigment",
+          reverse: false,
+        },
+        {
+          category: "주름·자외선",
+          text: "표정을 짓지 않아도 눈가나 이마에 잔주름이 보이나요?",
+          options: "degree",
+          axis: "wrinkle",
+          reverse: false,
+        },
+        {
+          category: "주름·자외선",
+          text: "평소 야외에서 햇빛을 받는 시간이 하루에 얼마나 되나요?",
+          options: "sun",
+          axis: "wrinkle",
+          reverse: false,
+        },
+        {
+          category: "주름·자외선",
+          text: "외출할 때 자외선 차단제를 얼마나 자주 바르나요?",
+          options: "frequency",
+          axis: "wrinkle",
+          reverse: true,
+        },
+      ];
+      const optionSets = {
+        degree: ["전혀 없어요", "조금 있어요", "꽤 있어요", "많이 있어요"],
+        frequency: [
+          "거의 없어요",
+          "가끔 그래요",
+          "자주 그래요",
+          "거의 항상 그래요",
+        ],
+        sun: ["30분 미만", "30분~1시간 미만", "1~2시간 미만", "2시간 이상"],
+      };
+      const axisInfo = {
+        oil: {
+          low: "D",
+          high: "O",
+          lowText: "건성 성향",
+          highText: "지성 성향",
+          name: "유분·건조",
+          lowTip: "보습을 충분히 챙겨주세요.",
+          highTip: "과도한 세안은 피하고 가벼운 보습을 유지해보세요.",
+        },
+        sensitive: {
+          low: "R",
+          high: "S",
+          lowText: "자극 반응이 적은 성향",
+          highText: "민감성 성향",
+          name: "민감성",
+          lowTip: "새 화장품은 소량부터 사용해보세요.",
+          highTip:
+            "자극이 느껴지는 제품은 쉬고, 관리 단계를 단순하게 유지해보세요.",
+        },
+        pigment: {
+          low: "N",
+          high: "P",
+          lowText: "색소침착 고민이 적은 성향",
+          highText: "색소침착이 신경 쓰이는 성향",
+          name: "색소침착",
+          lowTip: "꾸준히 자외선 차단을 챙겨주세요.",
+          highTip: "트러블을 손으로 건드리지 않고 자외선 차단을 챙겨주세요.",
+        },
+        wrinkle: {
+          low: "T",
+          high: "W",
+          lowText: "주름·자외선 관리 신호가 적은 편",
+          highText: "주름·자외선 관리가 필요한 편",
+          name: "주름·자외선",
+          lowTip: "보습과 자외선 차단 습관을 이어가세요.",
+          highTip:
+            "자외선 차단과 보습을 챙기고, 야외에서는 모자도 활용해보세요.",
+        },
+      };
+      // 결과문 참고: 제공된 2025 안양문화고 수업자료 PDF 1–10쪽.
+      // 학생용으로 재작성했으며, 축약 설문으로 확인하지 않은 증상·치료를 단정하지 않습니다.
+      const typeResults = {
+        DSPT: {
+          name: "건조하고 예민한 흔적 고민형",
+          keywords: ["건조함", "민감함", "색소 흔적"],
+          features:
+            "건조함과 자극 반응이 있고, 트러블이 지나간 자리에 거뭇한 흔적이 신경 쓰이는 성향이에요.",
+          focus: "보습을 기본으로 자극을 줄이는 관리부터 시작해요.",
+          tips: [
+            "세안 후 보습제를 발라 당김을 줄여주세요.",
+            "피부를 문지르거나 트러블을 손으로 건드리지 마세요.",
+            "외출할 때 자외선 차단을 챙겨주세요.",
+          ],
+        },
+        DSNT: {
+          name: "건조하고 예민한 보습 집중형",
+          keywords: ["건조함", "민감함", "보습 우선"],
+          features:
+            "건조함과 붉어짐·따가움 같은 자극 반응이 신경 쓰이지만, 갈색 흔적 고민은 비교적 적은 성향이에요.",
+          focus: "여러 제품을 더하기보다 편안한 보습 습관을 만들어봐요.",
+          tips: [
+            "세안 후 당기기 전에 보습제를 발라주세요.",
+            "각질 제거와 강한 마찰을 줄여주세요.",
+            "새 화장품은 소량부터 사용해보세요.",
+          ],
+        },
+        DSPW: {
+          name: "보습·흔적·탄력 복합 관리형",
+          keywords: ["건조함", "민감함", "흔적·탄력"],
+          features:
+            "건조함과 자극 반응에 더해 색소 흔적, 잔주름 또는 자외선 노출 습관이 함께 신경 쓰이는 성향이에요.",
+          focus: "기본 보습과 자극 관리부터 차근차근 챙겨요.",
+          tips: [
+            "보습제를 꾸준히 사용해 건조함을 줄여주세요.",
+            "여러 기능성 제품을 한꺼번에 시작하지 마세요.",
+            "외출할 때 자외선 차단을 꾸준히 챙겨주세요.",
+          ],
+        },
+        DSNW: {
+          name: "예민한 피부의 보습·탄력 관리형",
+          keywords: ["건조함", "민감함", "잔주름 관리"],
+          features:
+            "색소 흔적 고민은 비교적 적지만 건조함과 자극 반응, 잔주름 또는 자외선 관리가 신경 쓰이는 성향이에요.",
+          focus: "피부가 편안하게 느끼는 보습 루틴을 유지해요.",
+          tips: [
+            "순한 세안과 충분한 보습을 기본으로 해주세요.",
+            "따갑거나 붉어지는 제품은 사용을 쉬어주세요.",
+            "자외선 차단과 규칙적인 생활 습관을 챙겨주세요.",
+          ],
+        },
+        OSPT: {
+          name: "번들거리고 예민한 흔적 고민형",
+          keywords: ["번들거림", "민감함", "색소 흔적"],
+          features:
+            "유분과 자극 반응이 있고, 트러블이 지나간 자리에 남는 갈색 흔적이 신경 쓰이는 성향이에요.",
+          focus: "유분을 과하게 없애기보다 자극과 흔적을 함께 관리해요.",
+          tips: [
+            "과도한 세안과 강한 스크럽을 줄여주세요.",
+            "가벼운 보습제로 피부가 당기지 않게 해주세요.",
+            "트러블을 짜거나 만지지 않고 자외선 차단을 챙겨주세요.",
+          ],
+        },
+        OSNT: {
+          name: "번들거리고 예민한 균형 관리형",
+          keywords: ["유분", "민감함", "균형 관리"],
+          features:
+            "유분이 올라오고 화장품이나 환경 변화에 자극 반응이 있지만, 색소 흔적 고민은 비교적 적은 성향이에요.",
+          focus: "피부에 부담이 적은 간단한 루틴으로 균형을 맞춰봐요.",
+          tips: [
+            "피지를 없애려고 너무 자주 세안하지 마세요.",
+            "산뜻한 보습제로 수분을 챙겨주세요.",
+            "새 제품을 한꺼번에 여러 개 바꾸지 마세요.",
+          ],
+        },
+        OSPW: {
+          name: "유분·민감·흔적 복합 관리형",
+          keywords: ["유분", "민감함", "흔적·탄력"],
+          features:
+            "유분과 자극 반응, 갈색 흔적에 더해 잔주름 또는 자외선 노출 습관까지 함께 살펴볼 성향이에요.",
+          focus: "고민이 많을수록 기본 루틴을 꾸준히 유지해요.",
+          tips: [
+            "세안·보습·자외선 차단을 기본으로 챙겨주세요.",
+            "자극이 생기면 기능성 제품을 더하기보다 루틴을 줄여보세요.",
+            "피부가 편안해진 뒤 필요한 관리를 하나씩 추가해보세요.",
+          ],
+        },
+        OSNW: {
+          name: "번들거리는 민감 피부 탄력 관리형",
+          keywords: ["번들거림", "민감함", "자외선 관리"],
+          features:
+            "유분과 자극 반응이 있고, 색소 흔적보다는 잔주름 또는 자외선 관리 습관이 신경 쓰이는 성향이에요.",
+          focus: "산뜻한 보습과 자극을 줄이는 관리가 우선이에요.",
+          tips: [
+            "가벼운 사용감의 보습제를 꾸준히 발라주세요.",
+            "강한 세정과 잦은 각질 제거를 줄여주세요.",
+            "자외선 차단을 꾸준히 하고 야외에서는 모자도 활용해보세요.",
+          ],
+        },
+        ORPT: {
+          name: "유분과 잡티가 신경 쓰이는 타입",
+          keywords: ["유분", "색소 흔적", "톤 관리"],
+          features:
+            "화장품이나 환경 변화에 자극 반응은 비교적 적지만, 번들거림과 갈색 흔적이 신경 쓰이는 성향이에요.",
+          focus: "가벼운 보습과 꾸준한 자외선 차단으로 관리해요.",
+          tips: [
+            "피부를 과하게 씻거나 문지르지 마세요.",
+            "유분이 있어도 보습은 챙겨주세요.",
+            "흔적 부위를 손으로 건드리지 않고 자외선 차단을 유지해주세요.",
+          ],
+        },
+        ORNT: {
+          name: "유분은 있지만 비교적 편안한 타입",
+          keywords: ["유분", "적은 자극 반응", "기본 관리"],
+          features:
+            "유분이 올라오는 편이지만, 자극 반응과 갈색 흔적, 잔주름·자외선 관리 신호는 비교적 적게 나타났어요.",
+          focus: "지금의 균형을 유지하는 기본 관리가 잘 맞아요.",
+          tips: [
+            "편안한 세안과 가벼운 보습을 유지해주세요.",
+            "번들거린다고 세안 횟수를 지나치게 늘리지 마세요.",
+            "매일 자외선 차단을 챙겨주세요.",
+          ],
+        },
+        ORPW: {
+          name: "유분·흔적·탄력 관리형",
+          keywords: ["유분", "색소 흔적", "탄력 관리"],
+          features:
+            "자극 반응은 비교적 적지만 유분과 갈색 흔적, 잔주름 또는 자외선 관리가 신경 쓰이는 성향이에요.",
+          focus: "유분이 있어도 보습과 자외선 차단이 필요해요.",
+          tips: [
+            "번들거림이 부담스럽지 않은 보습제를 선택해보세요.",
+            "피부 톤 관리는 자외선 차단과 함께 꾸준히 해주세요.",
+            "여러 기능성 제품을 한꺼번에 시작하지 마세요.",
+          ],
+        },
+        ORNW: {
+          name: "유분 피부의 탄력 관리형",
+          keywords: ["유분", "적은 색소 고민", "잔주름 관리"],
+          features:
+            "유분이 올라오지만 자극 반응과 갈색 흔적 고민은 비교적 적고, 잔주름 또는 자외선 관리가 필요한 성향이에요.",
+          focus: "번들거림과 별개로 보습과 자외선 관리를 챙겨요.",
+          tips: [
+            "세안 후 당기지 않도록 가벼운 보습제를 사용해보세요.",
+            "피부를 과하게 씻거나 각질을 자주 제거하지 마세요.",
+            "자외선 차단과 규칙적인 수면 습관을 유지해주세요.",
+          ],
+        },
+        DRPT: {
+          name: "건조함과 잡티가 신경 쓰이는 타입",
+          keywords: ["건조함", "색소 흔적", "수분 관리"],
+          features:
+            "자극 반응은 비교적 적지만 건조함과 갈색 흔적이 신경 쓰이는 성향이에요.",
+          focus: "보습으로 편안함을 채우고 자외선 차단으로 관리해요.",
+          tips: [
+            "세안 후 보습제를 충분히 발라주세요.",
+            "건조한 날에는 피부 상태에 맞춰 보습량을 늘려보세요.",
+            "외출할 때 자외선 차단을 꾸준히 챙겨주세요.",
+          ],
+        },
+        DRNT: {
+          name: "건조하지만 비교적 편안한 타입",
+          keywords: ["건조함", "적은 자극 반응", "보습 중심"],
+          features:
+            "건조함은 느끼지만 자극 반응과 갈색 흔적, 잔주름·자외선 관리 신호는 비교적 적게 나타났어요.",
+          focus: "복잡한 관리보다 충분한 보습이 먼저예요.",
+          tips: [
+            "미지근한 물로 세안하고 보습제를 발라주세요.",
+            "당김이 느껴지면 보습량을 조절해보세요.",
+            "편안한 상태를 유지하면서 자외선 차단도 챙겨주세요.",
+          ],
+        },
+        DRPW: {
+          name: "건조함·흔적·탄력 관리형",
+          keywords: ["건조함", "색소 흔적", "탄력 관리"],
+          features:
+            "자극 반응은 비교적 적지만 건조함과 갈색 흔적, 잔주름 또는 자외선 관리가 함께 신경 쓰이는 성향이에요.",
+          focus: "충분한 보습을 바탕으로 톤과 탄력 관리를 이어가요.",
+          tips: [
+            "건조함이 오래가지 않도록 보습제를 꾸준히 발라주세요.",
+            "기능성 제품은 피부 반응을 보며 하나씩 추가해보세요.",
+            "자외선 차단과 모자 등으로 햇빛 노출을 줄여주세요.",
+          ],
+        },
+        DRNW: {
+          name: "건조한 피부의 탄력 관리형",
+          keywords: ["건조함", "적은 색소 고민", "잔주름 관리"],
+          features:
+            "갈색 흔적과 자극 반응은 비교적 적지만, 건조함과 잔주름 또는 자외선 관리가 신경 쓰이는 성향이에요.",
+          focus: "보습과 생활 습관을 함께 챙겨봐요.",
+          tips: [
+            "세안 후 보습제를 충분히 발라주세요.",
+            "자외선 차단을 꾸준히 유지해주세요.",
+            "규칙적인 수면과 편안한 피부 관리 습관을 이어가세요.",
+          ],
+        },
+      };
+      const label = document.getElementById("label");
+      const title = document.getElementById("title");
+      const description = document.getElementById("description");
+      const answers = document.getElementById("answers");
+      const back = document.getElementById("back");
+      let current = -1;
+      let responses = [];
+      function calculateResults(values) {
+        return Object.entries(axisInfo).map(([key, info]) => {
+          const scores = questions.flatMap((q, i) => {
+            const value = values[i];
+            if (
+              q.axis !== key ||
+              !Number.isInteger(value) ||
+              value < 0 ||
+              value > 3
+            )
+              return [];
+            return [q.reverse ? 3 - value : value];
+          });
+          const mean = scores.length
+            ? scores.reduce((a, b) => a + b, 0) / scores.length
+            : null;
+          if (scores.length < 2)
+            return {
+              code: "?",
+              text: info.name + ": 응답 부족",
+              tip: "이전 질문으로 돌아가 경험에 맞는 답을 추가할 수 있어요.",
+            };
+          if (mean === 1.5)
+            return {
+              code: "?",
+              text: info.name + ": 경계 성향",
+              tip: "양쪽 특성이 섞여 있어 한쪽으로 구분하기 어려워요.",
+            };
+          const high = mean > 1.5;
+          return {
+            code: high ? info.high : info.low,
+            text: high ? info.highText : info.lowText,
+            tip: high ? info.highTip : info.lowTip,
+          };
+        });
+      }
+      function makeButton(text, action, primary = false) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = text;
+        if (primary) button.classList.add("primary");
+        button.addEventListener("click", action);
+        answers.appendChild(button);
+      }
+      function selectAnswer(value) {
+        responses[current] = value;
+        responses.length = current + 1;
+        current += 1;
+        render();
+      }
+      function restart() {
+        current = -1;
+        responses = [];
+        render();
+      }
+      function render() {
+        answers.replaceChildren();
+        back.hidden = current < 0;
+        if (current === -1) {
+          label.textContent = "12문항 · 약 2~3분";
+          title.textContent = "내 피부는 어떤 성향일까요?";
+          description.textContent =
+            "평소 피부 상태에 가장 가까운 답을 골라주세요.\n12가지 질문으로 나의 피부성향과 관리 포인트를 알아봐요.";
+          makeButton(
+            "내 피부성향 알아보기",
+            () => {
+              current = 0;
+              render();
+            },
+            true,
+          );
+        } else if (current === questions.length) {
+          const result = calculateResults(responses);
+          const code = result.map((r) => r.code).join("");
+          label.textContent = "나의 간편 피부성향 결과";
+          const profile = typeResults[code];
+          if (profile) {
+            title.textContent = code + "\n" + profile.name;
+            description.textContent =
+              profile.keywords.map((k) => "#" + k).join("  ") +
+              "\n\n피부 특징\n" +
+              profile.features +
+              "\n\n관리 포인트\n" +
+              profile.focus +
+              "\n\n" +
+              profile.tips.map((tip, i) => i + 1 + ". " + tip).join("\n") +
+              "\n\n나의 네 가지 성향\n" +
+              result.map((r) => r.code + " · " + r.text).join("\n") +
+              "\n\n12문항 자체 채점에 따른 참고 결과입니다. W/T는 잔주름과 자외선 관련 응답을 함께 반영하며 실제 탄력을 측정하지 않습니다.";
+          } else {
+            title.textContent = "내 피부성향을 확인해보세요";
+            description.textContent =
+              result.map((r) => r.text + "\n" + r.tip).join("\n\n") +
+              "\n\n응답이 부족하거나 경계에 해당하는 항목이 있어 16가지 타입 중 하나로 구분하지 않았어요. 이전 질문으로 돌아가 답변을 확인할 수 있어요.";
+          }
+          makeButton("처음부터 다시 하기", restart, true);
+        } else {
+          const question = questions[current];
+          label.textContent = `질문 ${current + 1} / ${questions.length} · ${question.category}`;
+          title.textContent = question.text;
+          description.textContent =
+            "평소의 나에게 더 가까운 답을 선택해주세요.";
+          optionSets[question.options].forEach((text, i) =>
+            makeButton(text, () => selectAnswer(i)),
+          );
+          makeButton("잘 모르겠어요 / 경험이 없어요", () => selectAnswer(null));
+        }
+        title.focus({ preventScroll: true });
+        window.scrollTo({ top: 0, behavior: "auto" });
+      }
+      back.addEventListener("click", () => {
+        if (current < 0) return;
+        current -= 1;
+        render();
+      });
+      render();
+    </script>
+  </body>
+</html>
