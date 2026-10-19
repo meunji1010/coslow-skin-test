@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>피부 MBTI 검사하기</title>
+    <title>피부 MBTI 알아보기</title>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap");
       * {
@@ -46,7 +46,7 @@
       }
       .brand {
         display: inline-block;
-        margin: 0 0 38px;
+        margin: 0 0 20px;
         padding: 7px 12px;
         border: 1.5px solid #29233d;
         border-radius: 9px;
@@ -93,13 +93,13 @@
       }
       .answers {
         display: grid;
-        gap: 15px;
-        margin-top: 34px;
+        gap: 10px;
+        margin-top: 20px;
       }
       button {
         width: 100%;
-        min-height: 62px;
-        padding: 17px 16px;
+        min-height: 50px;
+        padding: 12px 14px;
         border: 2px solid #29233d;
         border-radius: 18px;
         background: #fff;
@@ -645,7 +645,6 @@
           optionSets[question.options].forEach((text, i) =>
             makeButton(text, () => selectAnswer(i)),
           );
-          makeButton("잘 모르겠어요 / 경험이 없어요", () => selectAnswer(null));
         }
         title.focus({ preventScroll: true });
         window.scrollTo({ top: 0, behavior: "auto" });
